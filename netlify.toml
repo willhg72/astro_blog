@@ -5,10 +5,6 @@
 [build.environment]
   # Set the Node.js version
   NODE_VERSION = "18"
-
-[functions]
-  # This directory is where your server functions will be built
-  directory = "netlify/functions"
   
 # For server-side rendering, we need to handle all paths
 [[redirects]]
