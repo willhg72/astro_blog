@@ -1,0 +1,55 @@
+---
+interface Props {
+  post: any;
+}
+
+const { post } = Astro.props;
+---
+
+<div class="post-card">
+  <a href={`/blog/${post.slug}/`} class="post-link">
+    <h3 class="post-title">{post.data.title || "Sin título"}</h3>
+    <p class="post-description">{post.data.description || "Sin descripción"}</p>
+    <div class="read-more">Leer más →</div>
+  </a>
+</div>
+
+<style>
+  .post-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  .post-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a202c;
+  }
+  
+  .post-description {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    color: #4a5568;
+  }
+  
+  .read-more {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #3182ce;
+  }
+</style>

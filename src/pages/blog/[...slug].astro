@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { 
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.pubDate,
+      updatedDate: post.data.updatedDate,
+      heroImage: post.data.heroImage,
+      content: marked.parse(post.body)
+    },
+  }));
+}
+
+const { slug } = Astro.params;
+const props = Astro.props;
+---
+
+<BlogPost {...props}>
+  <article set:html={props.content} />
+</BlogPost>
+
+<style>
+  article {
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  
+  article :global(h2) {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  article :global(p) {
+    margin-bottom: 1.5rem;
+  }
+  
+  article :global(ul) {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+  
+  article :global(li) {
+    margin-bottom: 0.5rem;
+  }
+  
+  article :global(strong) {
+    font-weight: 600;
+  }
+</style>

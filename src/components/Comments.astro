@@ -1,0 +1,466 @@
+---
+import { createClient } from '@supabase/supabase-js';
+import CommentForm from './CommentForm.astro';
+
+interface Props {
+  postId: string;
+}
+
+const { postId } = Astro.props;
+
+const supabase = createClient(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_ANON_KEY
+);
+
+// Fetch main comments (those without parent_id)
+const { data: mainComments } = await supabase
+  .from('comments')
+  .select('*')
+  .eq('post_id', postId)
+  .is('parent_id', null)
+  .order('created_at', { ascending: false });
+
+// Fetch replies
+const { data: replies } = await supabase
+  .from('comments')
+  .select('*')
+  .eq('post_id', postId)
+  .not('parent_id', 'is', null)
+  .order('created_at', { ascending: true });
+
+// Group replies by parent_id
+const repliesByParent = {};
+replies?.forEach(reply => {
+  if (!repliesByParent[reply.parent_id]) {
+    repliesByParent[reply.parent_id] = [];
+  }
+  repliesByParent[reply.parent_id].push(reply);
+});
+
+const commentCount = (mainComments?.length || 0) + (replies?.length || 0);
+---
+
+<section class="comments-section">
+  <h2 class="comments-title">Comentarios ({commentCount})</h2>
+  
+  <CommentForm postId={postId} />
+
+  <div class="comments-list">
+    {mainComments?.map((comment) => (
+      <div class="comment-item" id={`comment-${comment.id}`}>
+        <div class="comment-header">
+          <span class="comment-author">{comment.email.split('@')[0]}</span>
+          <span class="comment-date">
+            {new Date(comment.created_at).toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </span>
+        </div>
+        <p class="comment-content">{comment.content}</p>
+        <div class="comment-actions">
+          <button class="comment-action-button like-button" data-comment-id={comment.id}>
+            <span class="like-count">{comment.likes || 0}</span> Me gusta
+          </button>
+          <button class="comment-action-button reply-button" data-comment-id={comment.id}>
+            Responder
+          </button>
+        </div>
+        
+        <!-- Reply form (hidden by default) -->
+        <div class="reply-form-container" id={`reply-form-${comment.id}`} style="display: none;">
+          <form class="reply-form">
+            <input type="hidden" name="parentId" value={comment.id} />
+            <input type="hidden" name="postId" value={postId} />
+            
+            <input
+              type="email"
+              name="email"
+              placeholder="Tu correo electrónico"
+              required
+              class="comment-input"
+            />
+            
+            <textarea
+              name="content"
+              placeholder="Escribe tu respuesta..."
+              required
+              rows="2"
+              class="comment-textarea"
+            ></textarea>
+            
+            <div class="comment-button-container">
+              <button type="button" class="cancel-reply-button">Cancelar</button>
+              <button type="submit" class="comment-submit-button">Responder</button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Replies container -->
+        <div class="replies-container" id={`replies-${comment.id}`}>
+          {repliesByParent[comment.id]?.map(reply => (
+            <div class="comment-item" id={`comment-${reply.id}`}>
+              <div class="comment-header">
+                <span class="comment-author">{reply.email.split('@')[0]}</span>
+                <span class="comment-date">
+                  {new Date(reply.created_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+              <p class="comment-content">{reply.content}</p>
+              <div class="comment-actions">
+                <button class="comment-action-button like-button" data-comment-id={reply.id}>
+                  <span class="like-count">{reply.likes || 0}</span> Me gusta
+                </button>
+                <button class="comment-action-button reply-button" data-comment-id={reply.id}>
+                  Responder
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .comments-section {
+    margin-top: 3rem;
+  }
+  
+  .comments-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .comments-list {
+    margin-top: 2rem;
+  }
+  
+  .comment-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .comment-author {
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  
+  .comment-date {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+  
+  .comment-content {
+    margin-bottom: 0.75rem;
+  }
+  
+  .comment-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .comment-action-button {
+    background: none;
+    border: none;
+    color: #718096;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .comment-action-button:hover {
+    color: #2d3748;
+  }
+</style>
+
+<style>
+  /* Add to existing styles */
+  .reply-form-container {
+    margin-top: 1rem;
+    margin-left: 2rem;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 0.375rem;
+  }
+  
+  .reply-form .comment-input,
+  .reply-form .comment-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+  }
+  
+  .reply-form .comment-input:focus,
+  .reply-form .comment-textarea:focus {
+    outline: none;
+    border-color: #a0aec0;
+    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.1);
+  }
+  
+  .comment-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  
+  .cancel-reply-button {
+    background-color: #e2e8f0;
+    color: #4a5568;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .cancel-reply-button:hover {
+    background-color: #cbd5e0;
+  }
+  
+  .comment-submit-button {
+    background-color: #000;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .comment-submit-button:hover {
+    background-color: #2d3748;
+  }
+  
+  .like-button.active {
+    color: #3182ce;
+    font-weight: 500;
+  }
+  
+  .replies-container {
+    margin-left: 2rem;
+    margin-top: 1rem;
+  }
+</style>
+
+
+
+<script>
+  // Fetch likes count for all comments
+  async function fetchLikesCount() {
+    const likeButtons = document.querySelectorAll('.like-button');
+    
+    for (const button of likeButtons) {
+      const commentId = button.getAttribute('data-comment-id');
+      const likeCount = button.querySelector('.like-count');
+      
+      try {
+        const response = await fetch(`/api/likes?commentId=${commentId}`, {
+          method: 'GET'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          likeCount.textContent = data.likes || 0;
+          
+          // Check if user has liked this comment
+          const email = localStorage.getItem('userEmail');
+          if (email) {
+            checkUserLike(commentId, email, button);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching likes:', error);
+      }
+    }
+  }
+  
+  // Check if user has liked a comment
+  async function checkUserLike(commentId, email, button) {
+    try {
+      const response = await fetch(`/api/check-like?commentId=${commentId}&email=${encodeURIComponent(email)}`, {
+        method: 'GET'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.hasLiked) {
+          button.classList.add('active');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking like status:', error);
+    }
+  }
+  
+  // Call this function when the page loads
+  document.addEventListener('DOMContentLoaded', fetchLikesCount);
+  
+  // Handle like button clicks
+  document.querySelectorAll('.like-button').forEach(button => {
+    button.addEventListener('click', async () => {
+      const commentId = button.getAttribute('data-comment-id');
+      const likeCount = button.querySelector('.like-count');
+      
+      // Get user email from localStorage or form
+      const email = localStorage.getItem('userEmail') || 
+                    document.querySelector('input[name="email"]')?.value;
+      
+      if (!email) {
+        alert('Por favor, ingresa tu correo electrónico antes de dar me gusta');
+        return;
+      }
+      
+      // Store email for future use
+      localStorage.setItem('userEmail', email);
+      
+      // Toggle active class for visual feedback
+      const wasActive = button.classList.contains('active');
+      button.classList.toggle('active');
+      
+      try {
+        // Send request to API
+        const response = await fetch('/api/likes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            commentId, 
+            email,
+            action: wasActive ? 'unlike' : 'like' 
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to update likes');
+        }
+        
+        const data = await response.json();
+        
+        // Update like count in UI with the value from the server
+        likeCount.textContent = data.likes;
+      } catch (error) {
+        console.error('Error:', error);
+        // Revert UI change if there was an error
+        button.classList.toggle('active');
+      }
+    });
+  });
+  
+  // Handle reply button clicks
+  document.querySelectorAll('.reply-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const commentId = button.getAttribute('data-comment-id');
+      const replyForm = document.getElementById(`reply-form-${commentId}`);
+      
+      // Hide all other reply forms first
+      document.querySelectorAll('.reply-form-container').forEach(form => {
+        form.style.display = 'none';
+      });
+      
+      // Show this reply form
+      replyForm.style.display = 'block';
+    });
+  });
+  
+  // Handle cancel reply button clicks
+  document.querySelectorAll('.cancel-reply-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const form = button.closest('.reply-form-container');
+      form.style.display = 'none';
+    });
+  });
+  
+  // Handle reply form submissions
+  document.querySelectorAll('.reply-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const email = formData.get('email');
+      const content = formData.get('content');
+      const parentId = formData.get('parentId');
+      const postId = formData.get('postId');
+      
+      if (!email || !content) {
+        alert('Por favor, completa todos los campos');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/replies', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, content, postId, parentId }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to add reply');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Add the reply to the UI
+          const repliesContainer = document.getElementById(`replies-${parentId}`);
+          const replyElement = document.createElement('div');
+          replyElement.className = 'comment-item';
+          replyElement.innerHTML = `
+            <div class="comment-header">
+              <span class="comment-author">${email.toString().split('@')[0]}</span>
+              <span class="comment-date">Ahora mismo</span>
+            </div>
+            <p class="comment-content">${content}</p>
+            <div class="comment-actions">
+              <button class="comment-action-button like-button" data-comment-id="${data.reply.id}">
+                <span class="like-count">0</span> Me gusta
+              </button>
+              <button class="comment-action-button reply-button" data-comment-id="${data.reply.id}">
+                Responder
+              </button>
+            </div>
+          `;
+          
+          repliesContainer.appendChild(replyElement);
+          
+          // Hide the reply form
+          form.closest('.reply-form-container').style.display = 'none';
+          
+          // Reset the form
+          form.reset();
+          
+          // Store email for future use
+          localStorage.setItem('userEmail', email);
+        } else {
+          throw new Error(data.message || 'Error al enviar la respuesta');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al enviar la respuesta. Por favor, intenta de nuevo.');
+      }
+    });
+  });
+</script>
