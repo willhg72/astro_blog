@@ -9,5 +9,5 @@
 # For server-side rendering, we need to handle all paths
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/entry"
+  to = "/.netlify/functions/ssr"
   status = 200
