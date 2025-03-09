@@ -18,6 +18,8 @@
     "@supabase/supabase-js": "^2.39.3",
     "astro": "^5.2.5",
     "marked": "^15.0.7",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
     "tailwindcss": "^3.4.1"
   }
 }
