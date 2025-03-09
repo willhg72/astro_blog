@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 
-// Add this line to prerender the page
+// Make sure this page is prerendered
 export const prerender = true;
 
 export async function getStaticPaths() {
@@ -10,12 +10,18 @@ export async function getStaticPaths() {
   
   return posts.map((post) => ({
     params: { slug: post.id },
-    props: { post },
+    props: { 
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.pubDate,
+      updatedDate: post.data.updatedDate,
+      heroImage: post.data.heroImage,
+      body: post.body
+    },
   }));
 }
 
-const { slug } = Astro.params;
-const { post } = Astro.props;
+const props = Astro.props;
 
 // Simple function to convert markdown to HTML
 function markdownToHtml(markdown) {
@@ -34,10 +40,10 @@ function markdownToHtml(markdown) {
     .replace(/^(?!<[uo]l|<li|<h)(.+)$/gm, '<p>$1</p>');
 }
 
-const contentHtml = markdownToHtml(post.body);
+const contentHtml = markdownToHtml(props.body);
 ---
 
-<BlogPost {...post.data}>
+<BlogPost {...props}>
   <article set:html={contentHtml} class="blog-content" />
 </BlogPost>
 
