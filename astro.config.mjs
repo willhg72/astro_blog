@@ -7,9 +7,11 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://example.com',
   integrations: [mdx(), sitemap()],
-  output: 'static',
-  // Add the adapter configuration
+  
+  // Choose either 'static' or 'server' for output
   output: 'server',
+  
+  // Keep the adapter for server-rendered pages
   adapter: node({
     mode: 'standalone'
   }),

@@ -17,15 +17,24 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const { post } = Astro.props;
 
-// Import the remark-rehype plugin to convert markdown to HTML
-import { remark } from 'remark';
-import remarkHtml from 'remark-html';
+// Simple function to convert markdown to HTML
+function markdownToHtml(markdown) {
+  // Basic conversion of markdown to HTML
+  return markdown
+    // Convert headers
+    .replace(/## (.*)/g, '<h2>$1</h2>')
+    // Convert bold text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Convert list items
+    .replace(/- (.*)/g, '<li>$1</li>')
+    // Wrap lists
+    .replace(/<li>(.*?)<\/li>(\s*<li>)/g, '<ul><li>$1</li>$2')
+    .replace(/<li>(.*?)<\/li>(\s*(?!<li>))/g, '<li>$1</li></ul>$2')
+    // Convert paragraphs
+    .replace(/^(?!<[uo]l|<li|<h)(.+)$/gm, '<p>$1</p>');
+}
 
-// Process the markdown content
-const processedContent = await remark()
-  .use(remarkHtml)
-  .process(post.body);
-const contentHtml = processedContent.toString();
+const contentHtml = markdownToHtml(post.body);
 ---
 
 <BlogPost {...post.data}>
