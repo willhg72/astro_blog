@@ -1,15 +1,17 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  
+[build.environment]
+  # Set the Node.js version
+  NODE_VERSION = "18"
 
-# Handle SPA routing
+[functions]
+  # This directory is where your server functions will be built
+  directory = "netlify/functions"
+  
+# For server-side rendering, we need to handle all paths
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Specific redirects for blog posts
-[[redirects]]
-  from = "/blog/*"
-  to = "/blog/[...slug].html"
+  to = "/.netlify/functions/entry"
   status = 200
