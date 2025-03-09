@@ -1,11 +1,11 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
+// Make sure this is set to false to prevent prerendering
 export const prerender = false;
 
 // Helper function to create likes table if it doesn't exist
-async function ensureLikesTable(supabase: SupabaseClient) {
+async function ensureLikesTable(supabase: any) {
   try {
     // Check if the likes table exists
     const { error: tableCheckError } = await supabase
