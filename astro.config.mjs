@@ -5,14 +5,14 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://your-netlify-site-name.netlify.app', // Update this to your actual Netlify URL
   integrations: [mdx(), sitemap()],
   
-  // Choose either 'static' or 'server' for output
-  output: 'server',
+  // For Netlify, static output works better
+  output: 'static',
   
-  // Keep the adapter for server-rendered pages
-  adapter: node({
-    mode: 'standalone'
-  }),
+  // Remove the adapter when using static output
+  // adapter: node({
+  //   mode: 'standalone'
+  // }),
 });

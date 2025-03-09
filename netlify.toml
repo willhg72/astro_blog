@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Handle SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Specific redirects for blog posts
+[[redirects]]
+  from = "/blog/*"
+  to = "/blog/[...slug].html"
+  status = 200
