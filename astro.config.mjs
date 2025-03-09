@@ -8,11 +8,11 @@ export default defineConfig({
   site: 'https://your-netlify-site-name.netlify.app', // Update this to your actual Netlify URL
   integrations: [mdx(), sitemap()],
   
-  // For Netlify, static output works better
-  output: 'static',
+  // Change back to server output
+  output: 'server',
   
-  // Remove the adapter when using static output
-  // adapter: node({
-  //   mode: 'standalone'
-  // }),
+  // Uncomment and use the adapter
+  adapter: node({
+    mode: 'standalone'
+  }),
 });
