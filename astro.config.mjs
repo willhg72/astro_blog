@@ -1,11 +1,15 @@
 import { defineConfig } from 'astro/config';
-import netlify from '@astrojs/netlify';
+import vercel from '@astrojs/vercel';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://sistemas-operativos-blog.netlify.app',
-  output: 'server',         // Indica a Astro que renderice en modo servidor
-  adapter: netlify(),       // Usa la función SSR normal de Netlify
+  // Indica que quieres SSR en lugar de estático
+  output: 'server',
+
+  // Usa el adaptador de Vercel
+  adapter: vercel(),
+
+  // Si tienes integraciones adicionales:
   integrations: [mdx(), sitemap()],
 });
