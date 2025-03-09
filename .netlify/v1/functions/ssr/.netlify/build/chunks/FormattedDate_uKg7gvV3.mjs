@@ -1,10 +1,10 @@
-import { f as createAstro, c as createComponent, r as renderTemplate, e as addAttribute, m as maybeRenderHead, s as spreadAttributes, g as renderSlot, b as renderComponent } from './astro/server_CVwAO8B7.mjs';
+import { f as createAstro, c as createComponent, r as renderTemplate, e as addAttribute, m as maybeRenderHead, s as spreadAttributes, g as renderSlot, b as renderComponent } from './astro/server_BisoU70a.mjs';
 import 'kleur/colors';
 import 'clsx';
 /* empty css                         */
 import { a as SITE_TITLE } from './consts_BpIKaqBC.mjs';
 
-const $$Astro$3 = createAstro("https://your-netlify-site-name.netlify.app");
+const $$Astro$3 = createAstro("https://sistemas-operativos-blog.netlify.app");
 const $$BaseHead = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro$3, $$props, $$slots);
   Astro2.self = $$BaseHead;
@@ -13,7 +13,7 @@ const $$BaseHead = createComponent(($$result, $$props, $$slots) => {
   return renderTemplate`<!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml"${addAttribute(SITE_TITLE, "title")}${addAttribute(new URL("rss.xml", Astro2.site), "href")}><meta name="generator"${addAttribute(Astro2.generator, "content")}><!-- Font preloads --><link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical"${addAttribute(canonicalURL, "href")}><!-- Primary Meta Tags --><title>${title}</title><meta name="title"${addAttribute(title, "content")}><meta name="description"${addAttribute(description, "content")}><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url"${addAttribute(Astro2.url, "content")}><meta property="og:title"${addAttribute(title, "content")}><meta property="og:description"${addAttribute(description, "content")}><meta property="og:image"${addAttribute(new URL(image, Astro2.url), "content")}><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url"${addAttribute(Astro2.url, "content")}><meta property="twitter:title"${addAttribute(title, "content")}><meta property="twitter:description"${addAttribute(description, "content")}><meta property="twitter:image"${addAttribute(new URL(image, Astro2.url), "content")}>`;
 }, "D:/William/Universidad/Recorrido 1/Sistemas Operativos/Actividad 2/Blog/project/src/components/BaseHead.astro", void 0);
 
-const $$Astro$2 = createAstro("https://your-netlify-site-name.netlify.app");
+const $$Astro$2 = createAstro("https://sistemas-operativos-blog.netlify.app");
 const $$HeaderLink = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro$2, $$props, $$slots);
   Astro2.self = $$HeaderLink;
@@ -24,7 +24,7 @@ const $$HeaderLink = createComponent(($$result, $$props, $$slots) => {
   return renderTemplate`${maybeRenderHead()}<a${addAttribute(href, "href")}${addAttribute([className, { active: isActive }], "class:list")}${spreadAttributes(props)} data-astro-cid-eimmu3lg> ${renderSlot($$result, $$slots["default"])} </a> `;
 }, "D:/William/Universidad/Recorrido 1/Sistemas Operativos/Actividad 2/Blog/project/src/components/HeaderLink.astro", void 0);
 
-const $$Astro$1 = createAstro("https://your-netlify-site-name.netlify.app");
+const $$Astro$1 = createAstro("https://sistemas-operativos-blog.netlify.app");
 const $$Header = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro$1, $$props, $$slots);
   Astro2.self = $$Header;
@@ -38,7 +38,7 @@ const $$Footer = createComponent(($$result, $$props, $$slots) => {
 </footer> `;
 }, "D:/William/Universidad/Recorrido 1/Sistemas Operativos/Actividad 2/Blog/project/src/components/Footer.astro", void 0);
 
-const $$Astro = createAstro("https://your-netlify-site-name.netlify.app");
+const $$Astro = createAstro("https://sistemas-operativos-blog.netlify.app");
 const $$FormattedDate = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$FormattedDate;

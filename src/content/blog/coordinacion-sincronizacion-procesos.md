@@ -2,7 +2,7 @@
 title: "Coordinación y Sincronización de Procesos"
 description: "Análisis de los mecanismos de sincronización y coordinación entre procesos en sistemas operativos modernos."
 pubDate: "2025-03-09"
-heroImage: "/images/process-synchronization.jpg"
+heroImage: "/images/process-coodination.jpg"
 ---
 
 ## Concurrencia

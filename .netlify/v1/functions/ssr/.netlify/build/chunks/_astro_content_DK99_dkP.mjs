@@ -3,7 +3,7 @@ import { Traverse } from 'neotraverse/modern';
 import pLimit from 'p-limit';
 import { z, ZodIssueCode } from 'zod';
 import { r as removeBase, i as isRemotePath, V as VALID_INPUT_FORMATS, p as prependForwardSlash } from './consts_7OPt-DQA.mjs';
-import { A as AstroError, U as UnknownContentCollectionError, c as createComponent, R as RenderUndefinedEntryError, r as renderTemplate, u as unescapeHTML, h as renderUniqueStylesheet, i as renderScriptElement, j as createHeadAndContent, b as renderComponent } from './astro/server_CVwAO8B7.mjs';
+import { A as AstroError, U as UnknownContentCollectionError, c as createComponent, R as RenderUndefinedEntryError, r as renderTemplate, u as unescapeHTML, h as renderUniqueStylesheet, i as renderScriptElement, j as createHeadAndContent, b as renderComponent } from './astro/server_BisoU70a.mjs';
 import 'kleur/colors';
 import * as devalue from 'devalue';
 
@@ -65,7 +65,7 @@ class ImmutableDataStore {
    */
   static async fromModule() {
     try {
-      const data = await import('./_astro_data-layer-content_CtNn2Bv0.mjs');
+      const data = await import('./_astro_data-layer-content_CNDOCFzJ.mjs');
       if (data.default instanceof Map) {
         return ImmutableDataStore.fromMap(data.default);
       }
@@ -97,7 +97,7 @@ function dataStoreSingleton() {
 }
 const globalDataStore = dataStoreSingleton();
 
-const __vite_import_meta_env__ = {"ASSETS_PREFIX": undefined, "BASE_URL": "/", "DEV": false, "MODE": "production", "PROD": true, "PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeHNmamt4dWplYm9rcmZtaWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0ODgyOTYsImV4cCI6MjA1NzA2NDI5Nn0.NZ4usmwHrgUxBgSgw1V6Txpi_LsKtyh16V5Ri4yGf_k", "PUBLIC_SUPABASE_URL": "https://zrxsfjkxujebokrfmiks.supabase.co", "SITE": "https://your-netlify-site-name.netlify.app", "SSR": true};
+const __vite_import_meta_env__ = {"ASSETS_PREFIX": undefined, "BASE_URL": "/", "DEV": false, "MODE": "production", "PROD": true, "PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeHNmamt4dWplYm9rcmZtaWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0ODgyOTYsImV4cCI6MjA1NzA2NDI5Nn0.NZ4usmwHrgUxBgSgw1V6Txpi_LsKtyh16V5Ri4yGf_k", "PUBLIC_SUPABASE_URL": "https://zrxsfjkxujebokrfmiks.supabase.co", "SITE": "https://sistemas-operativos-blog.netlify.app", "SSR": true};
 function createCollectionToGlobResultMap({
   globResult,
   contentDir
@@ -212,7 +212,7 @@ const CONTENT_LAYER_IMAGE_REGEX = /__ASTRO_IMAGE_="([^"]+)"/g;
 async function updateImageReferencesInBody(html, fileName) {
   const { default: imageAssetMap } = await import('./content-assets_DleWbedO.mjs');
   const imageObjects = /* @__PURE__ */ new Map();
-  const { getImage } = await import('./_astro_assets_CLDwcbMR.mjs').then(n => n._);
+  const { getImage } = await import('./_astro_assets_CcMlyK7P.mjs').then(n => n._);
   for (const [_full, imagePath] of html.matchAll(CONTENT_LAYER_IMAGE_REGEX)) {
     try {
       const decodedImagePath = JSON.parse(imagePath.replaceAll("&#x22;", '"'));
@@ -272,7 +272,7 @@ async function renderEntry(entry) {
   }
   if (entry.deferredRender) {
     try {
-      const { default: contentModules } = await import('./content-modules_ChpHq3Je.mjs');
+      const { default: contentModules } = await import('./content-modules_Dz-S_Wwv.mjs');
       const renderEntryImport = contentModules.get(entry.filePath);
       return render({
         collection: "",

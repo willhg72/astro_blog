@@ -1,11 +1,11 @@
-import { f as createAstro, c as createComponent, r as renderTemplate, m as maybeRenderHead, e as addAttribute, a as renderScript, b as renderComponent, d as renderHead, g as renderSlot } from './astro/server_CVwAO8B7.mjs';
+import { f as createAstro, c as createComponent, r as renderTemplate, m as maybeRenderHead, e as addAttribute, a as renderScript, b as renderComponent, d as renderHead, g as renderSlot } from './astro/server_BisoU70a.mjs';
 import 'kleur/colors';
-import { $ as $$BaseHead, a as $$Header, b as $$FormattedDate, c as $$Footer } from './FormattedDate_4iaKSA64.mjs';
+import { $ as $$BaseHead, a as $$Header, b as $$FormattedDate, c as $$Footer } from './FormattedDate_uKg7gvV3.mjs';
 import 'clsx';
 import { createClient } from '@supabase/supabase-js';
 /* empty css                         */
 
-const $$Astro$1 = createAstro("https://your-netlify-site-name.netlify.app");
+const $$Astro$1 = createAstro("https://sistemas-operativos-blog.netlify.app");
 const $$Comments = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro$1, $$props, $$slots);
   Astro2.self = $$Comments;
@@ -30,7 +30,7 @@ Responder
 </button> </div> <div${addAttribute(`replies-${comment.id}`, "id")} class="replies-container" data-astro-cid-jvxsf75u></div> <div${addAttribute(`reply-form-${comment.id}`, "id")} class="reply-form-container" style="display: none;" data-astro-cid-jvxsf75u> <form class="reply-form" data-astro-cid-jvxsf75u> <input type="hidden" name="parentId"${addAttribute(comment.id, "value")} data-astro-cid-jvxsf75u> <input type="hidden" name="postId"${addAttribute(postId, "value")} data-astro-cid-jvxsf75u> <input type="email" name="email" class="comment-input" placeholder="Tu correo electrónico" required data-astro-cid-jvxsf75u> <textarea name="content" class="comment-textarea" placeholder="Escribe tu respuesta..." required data-astro-cid-jvxsf75u></textarea> <div class="comment-button-container" data-astro-cid-jvxsf75u> <button type="button" class="cancel-reply-button" data-astro-cid-jvxsf75u>Cancelar</button> <button type="submit" class="comment-submit-button" data-astro-cid-jvxsf75u>Responder</button> </div> </form> </div> </div>`) : renderTemplate`<p data-astro-cid-jvxsf75u>No hay comentarios aún. ¡Sé el primero en comentar!</p>`} </div> </div>  ${renderScript($$result, "D:/William/Universidad/Recorrido 1/Sistemas Operativos/Actividad 2/Blog/project/src/components/Comments.astro?astro&type=script&index=0&lang.ts")}`;
 }, "D:/William/Universidad/Recorrido 1/Sistemas Operativos/Actividad 2/Blog/project/src/components/Comments.astro", void 0);
 
-const $$Astro = createAstro("https://your-netlify-site-name.netlify.app");
+const $$Astro = createAstro("https://sistemas-operativos-blog.netlify.app");
 const $$BlogPost = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$BlogPost;

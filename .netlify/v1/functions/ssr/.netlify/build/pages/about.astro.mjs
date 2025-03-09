@@ -1,6 +1,6 @@
-import { c as createComponent, r as renderTemplate, m as maybeRenderHead, a as renderScript, b as renderComponent } from '../chunks/astro/server_CVwAO8B7.mjs';
+import { c as createComponent, r as renderTemplate, m as maybeRenderHead, a as renderScript, b as renderComponent } from '../chunks/astro/server_BisoU70a.mjs';
 import 'kleur/colors';
-import { $ as $$BlogPost } from '../chunks/BlogPost_LRQ05bOb.mjs';
+import { $ as $$BlogPost } from '../chunks/BlogPost_7lCTjXVK.mjs';
 import 'clsx';
 /* empty css                                 */
 export { renderers } from '../renderers.mjs';
@@ -15,7 +15,12 @@ Como líder orientado a resultados en el desarrollo de software, me destaco en m
 </p> <p>
 Mi compromiso y visión integradora son aspectos clave de mi enfoque. Cuando me enfrento a cualquier desafío, soy hábil en orquestar soluciones efectivas que impulsan el avance tecnológico.
 </p> <h2>Educación</h2> <p>
-Actualmente estoy cursando la materia de Sistemas Operativos, donde estoy profundizando mis conocimientos sobre la arquitectura y funcionamiento de los sistemas que hacen posible la computación moderna.
+Actualmente estoy cursando la materia de Sistemas Operativos en la
+<strong>Universidad UPTNT Manuela Sáenz</strong>.  
+    Si deseas conocer más sobre la plataforma de estudios, puedes visitar
+<a href="http://144.91.89.154/moodle-4.0.12/?redirect=0" target="_blank" rel="noopener">
+este enlace
+</a>.
 </p> <h2>Habilidades Técnicas</h2> <ul> <li><strong>Lenguajes de Programación:</strong> Python</li> <li><strong>Herramientas No-Code:</strong> Jotform, Airtable, Zapier, Make</li> <li><strong>Inteligencia Artificial:</strong> Implementación de soluciones con Chat GPT</li> <li><strong>Automatización:</strong> Diseño e implementación de flujos de trabajo automatizados</li> </ul> <h2>Enfoque Profesional</h2> <p>
 Mi filosofía profesional se centra en la búsqueda constante de la eficiencia a través de la tecnología. Creo firmemente que la automatización inteligente no solo optimiza procesos, sino que también libera el potencial humano para tareas más creativas y estratégicas.
 </p> <p>

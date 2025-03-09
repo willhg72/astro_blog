@@ -1,7 +1,7 @@
-import { c as createComponent, r as renderTemplate, b as renderComponent, m as maybeRenderHead } from '../chunks/astro/server_CVwAO8B7.mjs';
+import { c as createComponent, r as renderTemplate, b as renderComponent, m as maybeRenderHead } from '../chunks/astro/server_BisoU70a.mjs';
 import 'kleur/colors';
-import { $ as $$BlogPost } from '../chunks/BlogPost_LRQ05bOb.mjs';
-import { g as getCollection } from '../chunks/_astro_content_BRP6AC5N.mjs';
+import { $ as $$BlogPost } from '../chunks/BlogPost_7lCTjXVK.mjs';
+import { g as getCollection } from '../chunks/_astro_content_DK99_dkP.mjs';
 /* empty css                                 */
 export { renderers } from '../renderers.mjs';
 
