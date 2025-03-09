@@ -1,0 +1,186 @@
+<div class="contact-form">
+  <h2>Contáctame</h2>
+  <div class="form-group">
+    <label for="fullName">Nombre completo</label>
+    <input type="text" id="fullName" placeholder="Tu nombre completo" required />
+  </div>
+  <div class="form-group">
+    <label for="email">Correo electrónico</label>
+    <input type="email" id="email" placeholder="tu@email.com" required />
+  </div>
+  <div class="form-group">
+    <label for="subject">Asunto</label>
+    <input type="text" id="subject" placeholder="Asunto del mensaje" required />
+  </div>
+  <div class="form-group">
+    <label for="message">Mensaje</label>
+    <textarea id="message" placeholder="Escribe tu mensaje aquí..." rows="5" required></textarea>
+  </div>
+  <button class="submit-button" type="button">Enviar mensaje</button>
+  <div id="status-message" class="status-message"></div>
+</div>
+
+<style>
+  .contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #1a202c;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4a5568;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .submit-button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background-color: #1a202c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .submit-button:hover {
+    background-color: #2d3748;
+  }
+
+  .status-message {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    text-align: center;
+    display: none;
+  }
+
+  .status-message.success {
+    background-color: #c6f6d5;
+    color: #2f855a;
+    display: block;
+  }
+
+  .status-message.error {
+    background-color: #fed7d7;
+    color: #c53030;
+    display: block;
+  }
+</style>
+
+<script>
+  // Contact form functionality
+  const fullNameInput = document.getElementById('fullName');
+  const emailInput = document.getElementById('email');
+  const subjectInput = document.getElementById('subject');
+  const messageInput = document.getElementById('message');
+  const submitButton = document.querySelector('.submit-button');
+  const statusMessage = document.getElementById('status-message');
+
+  if (fullNameInput && emailInput && subjectInput && messageInput && submitButton && statusMessage) {
+    submitButton.addEventListener('click', async () => {
+      // Get form values
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const subject = subjectInput.value.trim();
+      const message = messageInput.value.trim();
+
+      // Validate form
+      if (!fullName || !email || !subject || !message) {
+        showStatus('Por favor completa todos los campos', 'error');
+        return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showStatus('Por favor ingresa un correo electrónico válido', 'error');
+        return;
+      }
+
+      try {
+        // Show loading state
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
+        statusMessage.className = 'status-message';
+        statusMessage.textContent = '';
+
+        // Send the contact message to your API
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullName,
+            email,
+            subject,
+            message
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Clear the form
+          fullNameInput.value = '';
+          emailInput.value = '';
+          subjectInput.value = '';
+          messageInput.value = '';
+
+          // Show success message
+          showStatus('¡Mensaje enviado con éxito! Te contactaré pronto.', 'success');
+        } else {
+          throw new Error(result.message || 'Error al enviar el mensaje');
+        }
+      } catch (error) {
+        console.error('Error submitting contact form:', error);
+        showStatus('Error al enviar el mensaje: ' + error.message, 'error');
+      } finally {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = 'Enviar mensaje';
+      }
+    });
+  }
+
+  function showStatus(message, type) {
+    if (statusMessage) {
+      statusMessage.textContent = message;
+      statusMessage.className = 'status-message ' + type;
+    }
+  }
+</script>

@@ -16,12 +16,24 @@ export async function getStaticPaths() {
       pubDate: post.data.pubDate,
       updatedDate: post.data.updatedDate,
       heroImage: post.data.heroImage,
-      body: post.body
+      body: post.body,
+      currentSlug: post.id,
+      // Filter unique posts by title to avoid duplicates
+      allPosts: Array.from(
+        new Map(posts.map(p => [p.data.title, {
+          id: p.id,
+          title: p.data.title,
+          pubDate: p.data.pubDate
+        }])).values()
+      )
     },
   }));
 }
 
-const props = Astro.props;
+const { allPosts, currentSlug, ...props } = Astro.props;
+
+// Filter out current post from the list of all posts
+const otherPosts = allPosts.filter(post => post.id !== currentSlug);
 
 // Simple function to convert markdown to HTML
 function markdownToHtml(markdown) {
@@ -41,19 +53,117 @@ function markdownToHtml(markdown) {
 }
 
 const contentHtml = markdownToHtml(props.body);
+
+// Remove any console.log or console.warn statements that might be causing debug messages
 ---
 
 <BlogPost {...props}>
-  <article set:html={contentHtml} class="blog-content" />
+  <div class="blog-container">
+    <article set:html={contentHtml} class="blog-content" />
+    
+    <aside class="blog-sidebar">
+      <div class="sidebar-content">
+        <h3>Otros artículos</h3>
+        <ul class="other-posts-list">
+          {otherPosts.filter(post => post.id !== currentSlug).map(post => (
+            <li>
+              <a href={`/blog/${post.id}`}>
+                {post.title}
+                <span class="post-date">{new Date(post.pubDate).toLocaleDateString()}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  </div>
 </BlogPost>
 
 <style>
-  .blog-content {
-    line-height: 1.6;
-    max-width: 720px;
+  .blog-container {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
     margin: 0 auto;
   }
   
+  .blog-content {
+    line-height: 1.6;
+    flex: 1;
+    max-width: 720px;
+  }
+  
+  .blog-sidebar {
+    width: 280px;
+    margin-top: 2rem;
+  }
+  
+  .sidebar-content {
+    position: sticky;
+    top: 2rem;
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar-content h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .other-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .other-posts-list li {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+  }
+  
+  .other-posts-list li:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  .other-posts-list a {
+    display: block;
+    color: #1a202c;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .other-posts-list a:hover {
+    color: #3182ce;
+  }
+  
+  .post-date {
+    display: block;
+    font-size: 0.875rem;
+    color: #718096;
+    margin-top: 0.25rem;
+    font-weight: normal;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .blog-container {
+      flex-direction: column;
+    }
+    
+    .blog-sidebar {
+      width: 100%;
+    }
+  }
+  
+  /* Preserve existing styles */
   .blog-content :global(h2) {
     margin-top: 2rem;
     margin-bottom: 1rem;

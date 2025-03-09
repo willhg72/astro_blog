@@ -6,11 +6,16 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Comments from '../components/Comments.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+// Update Props type to include optional hideComments property
+type Props = CollectionEntry<'blog'>['data'] & {
+  hideComments?: boolean;
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+// Destructure hideComments from props with default value of false
+const { title, description, pubDate, updatedDate, heroImage, hideComments = false } = Astro.props;
 const currentPath = Astro.url.pathname.split('/').filter(Boolean).pop();
 const isHomePage = Astro.url.pathname === '/';
+const isAboutPage = currentPath === 'about';
 
 // Ensure dates are properly handled
 const formattedPubDate = pubDate instanceof Date ? pubDate : (pubDate ? new Date(pubDate) : null);
@@ -86,7 +91,13 @@ const formattedUpdatedDate = updatedDate instanceof Date ? updatedDate : (update
 						</div>
 					)}
 					<slot />
-					{!isHomePage && <Comments postId={currentPath || ''} />}
+					
+					{/* Make sure comments are displayed on blog posts */}
+					{!isHomePage && currentPath !== 'about' && (
+						<div class="comments-container">
+							<Comments postId={currentPath || ''} />
+						</div>
+					)}
 				</div>
 			</article>
 		</main>
