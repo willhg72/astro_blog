@@ -18,8 +18,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     const supabase = createClient(
-      import.meta.env.SUPABASE_URL,
-      import.meta.env.SUPABASE_ANON_KEY
+      import.meta.env.PUBLIC_SUPABASE_URL,
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
     );
     
     // Insert reply without the likes field

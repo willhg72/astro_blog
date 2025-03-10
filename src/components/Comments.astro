@@ -16,19 +16,34 @@ if (supabaseUrl && supabaseKey) {
     const supabase = createClient(supabaseUrl, supabaseKey);
     
     if (postId) {
+      // Fetch comments and their replies
       const { data, error } = await supabase
         .from('comments')
-        .select('*')
+        .select('*, replies:comments(id, email, content, created_at, parent_id)')
         .eq('post_id', postId)
+        .is('parent_id', null)
         .order('created_at', { ascending: false });
       
-      if (!error) comments = data;
+      if (!error) comments = data || [];
     }
   } catch (error) {
     console.error('Error fetching comments:', error);
   }
-} else {
-  // Removing the debug message that was appearing in the console
+}
+
+// Helper function to format relative time
+function formatRelativeTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  
+  if (diffDays > 0) {
+    return `Hace ${diffDays} ${diffDays === 1 ? 'día' : 'días'}`;
+  } else {
+    return `Hace ${diffHours} ${diffHours === 1 ? 'hora' : 'horas'}`;
+  }
 }
 ---
 
@@ -36,40 +51,79 @@ if (supabaseUrl && supabaseKey) {
   <h2>Comentarios ({comments.length})</h2>
   
   <div class="comment-form">
-    <input type="email" placeholder="Tu correo electrónico" class="email-input" required />
-    <textarea placeholder="Escribe tu comentario..." required></textarea>
-    <button class="submit-button" data-post-id={postId}>Publicar comentario</button>
+    <div class="form-group">
+      <label for="name-input">Tu nombre</label>
+      <input type="text" id="name-input" placeholder="Escribe tu nombre (opcional)" class="name-input" />
+    </div>
+    <div class="form-group">
+      <textarea placeholder="Escribe un comentario..." required></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="submit-button" data-post-id={postId}>Publicar comentario</button>
+    </div>
   </div>
   
   <div class="comments-list">
     {comments.length > 0 ? (
       comments.map((comment) => (
         <div class="comment-item">
-          <div class="comment-header">
-            <span class="comment-author">{comment.email.split('@')[0]}</span>
-            <span class="comment-date">{new Date(comment.created_at).toLocaleDateString()}</span>
+          <div class="comment-avatar">
+            <div class="avatar-circle">{comment.email.charAt(0).toUpperCase()}</div>
           </div>
-          <p class="comment-content">{comment.content}</p>
-          <div class="comment-actions">
-            <button class="comment-action-button like-button" data-comment-id={comment.id}>
-              <span class="like-count">0</span> Me gusta
-            </button>
-            <button class="comment-action-button reply-button" data-comment-id={comment.id}>
-              Responder
-            </button>
-          </div>
-          <div id={`replies-${comment.id}`} class="replies-container"></div>
-          <div id={`reply-form-${comment.id}`} class="reply-form-container" style="display: none;">
-            <form class="reply-form">
-              <input type="hidden" name="parentId" value={comment.id} />
-              <input type="hidden" name="postId" value={postId} />
-              <input type="email" name="email" class="comment-input" placeholder="Tu correo electrónico" required />
-              <textarea name="content" class="comment-textarea" placeholder="Escribe tu respuesta..." required></textarea>
-              <div class="comment-button-container">
-                <button type="button" class="cancel-reply-button">Cancelar</button>
-                <button type="submit" class="comment-submit-button">Responder</button>
+          <div class="comment-content-wrapper">
+            <div class="comment-header">
+              <span class="comment-author">{comment.email.split('@')[0]}</span>
+              <span class="comment-date">{formatRelativeTime(comment.created_at)}</span>
+            </div>
+            <p class="comment-content">{comment.content}</p>
+            <div class="comment-actions">
+              <button class="comment-action-button like-button" data-comment-id={comment.id}>
+                <span class="like-icon">❤</span> <span class="like-count">5</span> Me gusta
+              </button>
+              <button class="comment-action-button reply-button" data-comment-id={comment.id}>
+                Responder
+              </button>
+            </div>
+            
+            {comment.replies && comment.replies.length > 0 && (
+              <div class="replies-container">
+                {comment.replies.map((reply) => (
+                  <div class="reply-item">
+                    <div class="comment-avatar">
+                      <div class="avatar-circle">{reply.email.charAt(0).toUpperCase()}</div>
+                    </div>
+                    <div class="reply-content-wrapper">
+                      <div class="comment-header">
+                        <span class="comment-author">{reply.email.split('@')[0]}</span>
+                        <span class="comment-date">{formatRelativeTime(reply.created_at)}</span>
+                      </div>
+                      <p class="comment-content">{reply.content}</p>
+                      <div class="comment-actions">
+                        <button class="comment-action-button like-button" data-comment-id={reply.id}>
+                          <span class="like-icon">❤</span> <span class="like-count">2</span> Me gusta
+                        </button>
+                        <button class="comment-action-button reply-button" data-comment-id={reply.id}>
+                          Responder
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </form>
+            )}
+            
+            <div id={`reply-form-${comment.id}`} class="reply-form-container" style="display: none;">
+              <form class="reply-form">
+                <input type="hidden" name="parentId" value={comment.id} />
+                <input type="hidden" name="postId" value={postId} />
+                <input type="text" name="email" class="comment-input" placeholder="Tu nombre" required />
+                <textarea name="content" class="comment-textarea" placeholder="Escribe tu respuesta..." required></textarea>
+                <div class="comment-button-container">
+                  <button type="button" class="cancel-reply-button">Cancelar</button>
+                  <button type="submit" class="comment-submit-button">Responder</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       ))
@@ -84,11 +138,30 @@ if (supabaseUrl && supabaseKey) {
     margin-top: 3rem;
     padding-top: 2rem;
     border-top: 1px solid #e2e8f0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  .comments-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
   }
   
   .comment-form {
-    margin-top: 2rem;
     margin-bottom: 2rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
   }
   
   input, textarea {
@@ -96,13 +169,18 @@ if (supabaseUrl && supabaseKey) {
     padding: 0.75rem;
     border: 1px solid #e2e8f0;
     border-radius: 0.375rem;
-    margin-bottom: 1rem;
     font-family: inherit;
+    font-size: 1rem;
   }
   
   textarea {
     min-height: 6rem;
     resize: vertical;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
   }
   
   .submit-button {
@@ -113,18 +191,107 @@ if (supabaseUrl && supabaseKey) {
     border-radius: 0.375rem;
     border: none;
     cursor: pointer;
-    float: right;
     transition: background-color 0.2s;
   }
   
   .submit-button:hover {
     background-color: #2d3748;
   }
-
-  /* Add to existing styles */
+  
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .comment-item {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .comment-avatar {
+    flex-shrink: 0;
+  }
+  
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #4a5568;
+  }
+  
+  .comment-content-wrapper {
+    flex-grow: 1;
+  }
+  
+  .comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .comment-author {
+    font-weight: 600;
+    margin-right: 0.75rem;
+  }
+  
+  .comment-date {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+  
+  .comment-content {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+  
+  .comment-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .comment-action-button {
+    background: none;
+    border: none;
+    color: #4a5568;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .like-button.active {
+    color: #3182ce;
+    font-weight: 500;
+  }
+  
+  .replies-container {
+    margin-left: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .reply-item {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .reply-content-wrapper {
+    flex-grow: 1;
+  }
+  
   .reply-form-container {
     margin-top: 1rem;
-    margin-left: 2rem;
     padding: 1rem;
     background-color: #f8fafc;
     border-radius: 0.375rem;
@@ -138,13 +305,6 @@ if (supabaseUrl && supabaseKey) {
     border: 1px solid #e2e8f0;
     border-radius: 0.375rem;
     font-size: 1rem;
-  }
-  
-  .reply-form .comment-input:focus,
-  .reply-form .comment-textarea:focus {
-    outline: none;
-    border-color: #a0aec0;
-    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.1);
   }
   
   .comment-button-container {
@@ -182,19 +342,11 @@ if (supabaseUrl && supabaseKey) {
   .comment-submit-button:hover {
     background-color: #2d3748;
   }
-  
-  .like-button.active {
-    color: #3182ce;
-    font-weight: 500;
-  }
-  
-  .replies-container {
-    margin-left: 2rem;
-    margin-top: 1rem;
-  }
 </style>
 
 <script>
+  import { createClient } from '@supabase/supabase-js';
+  
   // Initialize Supabase client for browser
   const supabaseClient = createClient(
     import.meta.env.PUBLIC_SUPABASE_URL,
@@ -205,11 +357,14 @@ if (supabaseUrl && supabaseKey) {
     const submitButton = document.querySelector('.submit-button');
     
     submitButton?.addEventListener('click', async function() {
-      const email = document.querySelector('.email-input').value.trim();
+      const nameInput = document.querySelector('.name-input').value.trim();
       const content = document.querySelector('.comments-section textarea').value.trim();
       const postId = this.dataset.postId;
+      
+      // Use name as email or generate a placeholder
+      const email = nameInput ? `${nameInput}@example.com` : `user-${Date.now()}@example.com`;
 
-      if (email && content) {
+      if (content) {
         try {
           const { error } = await supabaseClient
             .from('comments')
@@ -229,52 +384,58 @@ if (supabaseUrl && supabaseKey) {
           console.error('Error saving comment:', error);
           alert('Error al guardar el comentario');
         }
+      } else {
+        alert('Por favor escribe un comentario');
       }
     });
   });
 
-  // Update like handler to use Supabase
-  document.querySelectorAll('.like-button').forEach(button => {
-    button.addEventListener('click', async () => {
+  // Handle reply button clicks
+  document.querySelectorAll('.reply-button').forEach(button => {
+    button.addEventListener('click', () => {
       const commentId = button.dataset.commentId;
-      const email = localStorage.getItem('userEmail');
-
-      try {
-        const { data, error } = await supabaseClient
-          .from('likes')
-          .upsert({ 
-            comment_id: commentId,
-            user_email: email,
-            created_at: new Date().toISOString()
-          });
-
-        if (error) throw error;
-        
-        // Update UI here
-        const likeCount = button.querySelector('.like-count');
-        likeCount.textContent = parseInt(likeCount.textContent) + 1;
-        
-      } catch (error) {
-        console.error('Error updating like:', error);
-      }
+      const replyForm = document.getElementById(`reply-form-${commentId}`);
+      
+      // Hide all other reply forms first
+      document.querySelectorAll('.reply-form-container').forEach(form => {
+        form.style.display = 'none';
+      });
+      
+      // Show this reply form
+      replyForm.style.display = 'block';
     });
   });
-
-  // Update reply handler to use Supabase
+  
+  // Handle cancel reply button clicks
+  document.querySelectorAll('.cancel-reply-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const form = button.closest('.reply-form-container');
+      form.style.display = 'none';
+    });
+  });
+  
+  // Handle reply form submissions
   document.querySelectorAll('.reply-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const formData = new FormData(form);
+      const email = formData.get('email') + '@example.com';
+      const content = formData.get('content');
       const parentId = formData.get('parentId');
       const postId = formData.get('postId');
-
+      
+      if (!email || !content) {
+        alert('Por favor, completa todos los campos');
+        return;
+      }
+      
       try {
         const { error } = await supabaseClient
           .from('comments')
           .insert([{
-            email: formData.get('email'),
-            content: formData.get('content'),
+            email,
+            content,
             post_id: postId,
             parent_id: parentId,
             created_at: new Date().toISOString()
@@ -288,6 +449,42 @@ if (supabaseUrl && supabaseKey) {
       } catch (error) {
         console.error('Error saving reply:', error);
         alert('Error al guardar la respuesta');
+      }
+    });
+  });
+  
+  // Handle like button clicks
+  document.querySelectorAll('.like-button').forEach(button => {
+    button.addEventListener('click', async () => {
+      const commentId = button.dataset.commentId;
+      const likeCount = button.querySelector('.like-count');
+      
+      // Toggle active class for visual feedback
+      button.classList.toggle('active');
+      
+      try {
+        // Get current user name or generate one
+        const userName = document.querySelector('.name-input')?.value || `user-${Date.now()}`;
+        const email = `${userName}@example.com`;
+        
+        const { data, error } = await supabaseClient
+          .from('likes')
+          .upsert({ 
+            comment_id: commentId,
+            user_email: email,
+            created_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+        
+        // Update like count in UI
+        const currentCount = parseInt(likeCount.textContent);
+        likeCount.textContent = button.classList.contains('active') ? currentCount + 1 : currentCount - 1;
+        
+      } catch (error) {
+        console.error('Error updating like:', error);
+        // Revert UI change if there was an error
+        button.classList.toggle('active');
       }
     });
   });
