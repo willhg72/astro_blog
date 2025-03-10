@@ -2,20 +2,26 @@ import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+// Desactiva el prerender para esta ruta (es una API)
 export const prerender = false;
 
-// Helper function to create contacts table if it doesn't exist
+/**
+ * (Opcional) Función auxiliar para crear la tabla "contacts" si no existe.
+ * Ten en cuenta que esto requiere privilegios suficientes en tu proyecto
+ * de Supabase y la extensión "uuid-ossp" o "pgcrypto" para usar uuid_generate_v4().
+ * Si prefieres crear la tabla desde el panel de Supabase, puedes eliminar esta función.
+ */
 async function ensureContactsTable(supabase: SupabaseClient) {
   try {
-    // Check if the contacts table exists
+    // Verifica si la tabla existe
     const { error: tableCheckError } = await supabase
       .from('contacts')
       .select('*')
       .limit(1);
-    
-    // If the table doesn't exist, create it
+
+    // Supabase suele devolver error code 'PGRST204' si la tabla no existe
     if (tableCheckError && tableCheckError.code === 'PGRST204') {
-      // Use SQL to create the table
+      // Usar un RPC (función remota) para ejecutar SQL. Debes tener creada la función 'execute_sql' en tu proyecto.
       const { error: createError } = await supabase.rpc('execute_sql', {
         sql: `
           CREATE TABLE IF NOT EXISTS contacts (
@@ -38,27 +44,31 @@ async function ensureContactsTable(supabase: SupabaseClient) {
   }
 }
 
-// POST endpoint to add a new contact message
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // Extrae el cuerpo JSON del request
     const { fullName, email, subject, message } = await request.json();
-    
+
+    // Validación simple
     if (!fullName || !email || !subject || !message) {
       return new Response(
-        JSON.stringify({ success: false, message: 'All fields are required' }),
+        JSON.stringify({ success: false, message: 'Todos los campos son obligatorios.' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
-    
-    const supabase = createClient(
-      import.meta.env.SUPABASE_URL,
-      import.meta.env.SUPABASE_ANON_KEY
-    );
-    
-    // Ensure contacts table exists
+
+    // Crea el cliente de Supabase
+    // Nota: si prefieres mantener las variables privadas solo en el servidor,
+    // puedes quitar el prefijo "PUBLIC_". Lo importante es que coincidan
+    // con las definidas en Vercel.
+    const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    // (Opcional) Crea la tabla si no existe
     await ensureContactsTable(supabase);
-    
-    // Add the contact message
+
+    // Inserta el nuevo contacto en la tabla "contacts"
     const { data, error } = await supabase
       .from('contacts')
       .insert([{ 
@@ -68,17 +78,17 @@ export const POST: APIRoute = async ({ request }) => {
         message 
       }])
       .select();
-    
+
     if (error) throw error;
-    
+
     return new Response(
-      JSON.stringify({ success: true, contact: data[0] }),
+      JSON.stringify({ success: true, contact: data?.[0] }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('Error adding contact message:', error);
     return new Response(
-      JSON.stringify({ success: false, message: 'Error adding contact message' }),
+      JSON.stringify({ success: false, message: 'Error agregando mensaje de contacto.' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
