@@ -1,6 +1,17 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
 import ContactMe from '../components/ContactMe.astro';
+import { getCollection } from 'astro:content';
+
+// 1) Obtenemos todos los posts de la colección 'blog'
+const posts = await getCollection('blog');
+
+// 2) Creamos un arreglo con la info necesaria (id, título, fecha)
+const allPosts = posts.map((post) => ({
+  id: post.id,
+  title: post.data.title,
+  pubDate: post.data.pubDate
+}));
 ---
 
 <Layout
@@ -9,6 +20,8 @@ import ContactMe from '../components/ContactMe.astro';
   pubDate={new Date('March 8, 2025')}
   heroImage="/about-hero.jpg"
   hideComments={true}
+  /* 3) Pasamos la lista de posts al layout */
+  allPosts={allPosts}
 >
   <h2>Perfil Profesional</h2>
   <p>
@@ -22,8 +35,8 @@ import ContactMe from '../components/ContactMe.astro';
   <h2>Educación</h2>
   <p>
     Actualmente estoy cursando la materia de Sistemas Operativos en la 
-    <strong>Universidad UPTNT Manuela Sáenz</strong>.  
-    Si deseas conocer más sobre la plataforma de estudios, puedes visitar  
+    <strong>Universidad UPTNT Manuela Sáenz</strong>.
+    Si deseas conocer más sobre la plataforma de estudios, puedes visitar
     <a 
       href="http://144.91.89.154/moodle-4.0.12/?redirect=0" 
       target="_blank" 
