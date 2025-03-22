@@ -22,8 +22,8 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Updated Content Security Policy meta tag to allow Chrome extensions -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://zrxsfjkxujebokrfmiks.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://zrxsfjkxujebokrfmiks.supabase.co https://*.supabase.co chrome-extension:; connect-src 'self' https://zrxsfjkxujebokrfmiks.supabase.co https://*.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; object-src 'none';">
+<!-- Updated Content Security Policy meta tag with script-src-elem -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://zrxsfjkxujebokrfmiks.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://zrxsfjkxujebokrfmiks.supabase.co https://*.supabase.co chrome-extension:; script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://zrxsfjkxujebokrfmiks.supabase.co https://*.supabase.co chrome-extension:; connect-src 'self' https://zrxsfjkxujebokrfmiks.supabase.co https://*.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; object-src 'none';">
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
